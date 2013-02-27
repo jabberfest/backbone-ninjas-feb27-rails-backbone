@@ -1,4 +1,4 @@
-class TodosController < ApplicationController
+class TodoController < ApplicationController
 
 	def index
 	end
