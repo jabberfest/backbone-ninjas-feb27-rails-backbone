@@ -56,6 +56,18 @@
 	<script src="./assets/jquery.min.js"></script>
 	<script src="./assets/lodash.min.js"></script>
 	<script src="./assets/lib/backbone.js"></script>
+    <script type="text/javascript">
+        var pubnub = PUBNUB.init({
+            subscribe_key: 'sub-c-278afe4a-7bb4-11e2-9372-12313f022c90',
+            uuid: PUBNUB.uuid()
+        });
+
+        pubnub.subscribe({
+            channel: "todo",
+            message: function(m) {console.log("New Message published: "+ m)}
+        })
+
+    </script>
 
 	<!-- ********************************************
 	For this example, don't use localStorage.
