@@ -9,7 +9,10 @@ var app = app || {};
 
 	// The collection of todos is backed by *localStorage* instead of a remote
 	// server.
-	var TodoList = Backbone.Collection.extend({
+	var TodoList = Backbone.PubNub.Collection.extend({
+
+        name: "MyCollection",
+        pubnub: pubnub,
 
 		// Reference to this collection's model.
 		model: app.Todo,
