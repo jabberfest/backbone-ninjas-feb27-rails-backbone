@@ -1,4 +1,12 @@
+require 'pubnub'
+
 class TodoController < ApplicationController
+
+  @@pubnub = Pubnub.new(
+      publish_key: 'pub-c-8b0d5c0d-e281-4e3a-b58f-0a3a33f03af2',
+      subscribe_key: 'sub-c-278afe4a-7bb4-11e2-9372-12313f022c90'
+  )
+
 
  # GET /todo
   # GET /todo.json
@@ -29,7 +37,9 @@ class TodoController < ApplicationController
 
     respond_to do |format|
       format.html # new.html.erb
-      format.json { render json: @todo }
+      format.json {
+        render json: @todo
+      }
     end
   end
 
@@ -46,7 +56,18 @@ class TodoController < ApplicationController
     respond_to do |format|
       if @todo.save
         format.html { redirect_to @todo, notice: 'Todo was successfully created.' }
-        format.json { render json: @todo, status: :created, location: @todo }
+        format.json {
+
+          @pub_completed = lambda {|message| puts(message)}
+
+          @@pubnub.publish(
+              :channel => :todo,
+              :message => {method: "create", namespace:'todo', model:@todo, uuid: request.headers['uuid']},
+              :callback => @pub_completed
+          )
+
+          render json: @todo, status: :created, location: @todo
+        }
       else
         format.html { render action: "new" }
         format.json { render json: @todo.errors, status: :unprocessable_entity }
@@ -62,10 +83,24 @@ class TodoController < ApplicationController
     respond_to do |format|
       if @todo.update_attributes(params[:todo])
         format.html { redirect_to @todo, notice: 'Todo was successfully updated.' }
-        format.json { head :no_content }
+        format.json {
+          @pub_completed = lambda {|message| puts(message)}
+
+          @@pubnub.publish(
+              :channel => :todo,
+              :message => {method: "update", namespace:'todo', model:@todo, uuid: request.headers['uuid']},
+              :callback => @pub_completed
+          )
+
+          head :no_content
+        }
       else
         format.html { render action: "edit" }
-        format.json { render json: @todo.errors, status: :unprocessable_entity }
+        format.json {
+
+
+          render json: @todo.errors, status: :unprocessable_entity
+        }
       end
     end
   end
@@ -78,7 +113,16 @@ class TodoController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to todos_url }
-      format.json { head :no_content }
+      format.json {
+        @pub_completed = lambda {|message| puts(message)}
+
+        @@pubnub.publish(
+            :channel => :todo,
+            :message => {method: "destroy", namespace:'todo', model:@todo, uuid: request.headers['uuid']},
+            :callback => @pub_completed
+        )
+        head :no_content
+      }
     end
   end
 

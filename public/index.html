@@ -55,7 +55,17 @@
 	<script src="./assets/base.js"></script>
 	<script src="./assets/jquery.min.js"></script>
 	<script src="./assets/lodash.min.js"></script>
+    <script src="http://cdn.pubnub.com/pubnub.min.js"></script>
+    <script>
+        var UUID = PUBNUB.uuid()
+
+        $(document).ajaxSend(function(e, xhr, options)
+        {
+            xhr.setRequestHeader("uuid", UUID);
+        });
+    </script>
 	<script src="./assets/lib/backbone.js"></script>
+
     <script type="text/javascript">
         var pubnub = PUBNUB.init({
             subscribe_key: 'sub-c-278afe4a-7bb4-11e2-9372-12313f022c90',
@@ -64,9 +74,10 @@
 
         pubnub.subscribe({
             channel: "todo",
-            message: function(m) {console.log("New Message published: "+ m)}
+            message: function(m) {
+                $(document).trigger('pubnub.'+ m.namespace+'.'+m.method,m)
+            }
         })
-
     </script>
 
 	<!-- ********************************************

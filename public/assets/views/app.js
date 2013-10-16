@@ -39,6 +39,12 @@ $(function ($) {
 			this.listenTo(app.Todos, 'filter', this.filterAll);
 			this.listenTo(app.Todos, 'all', this.render);
 
+            $(document).on('pubnub.todo.create', $.proxy(function(e,data){
+                if(data.uuid!=UUID){
+                    app.Todos.create(data.model);
+                }
+            }, this))
+
 			app.Todos.fetch();
 		},
 
@@ -105,7 +111,6 @@ $(function ($) {
 			if (e.which !== ENTER_KEY || !this.$input.val().trim()) {
 				return;
 			}
-
 			app.Todos.create(this.newAttributes());
 			this.$input.val('');
 		},

@@ -22,6 +22,7 @@ end
 
 gem 'jquery-rails'
 gem 'haml'
+gem "pubnub", "~> 3.3.0.7"
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
